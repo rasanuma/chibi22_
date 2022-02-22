@@ -5,17 +5,17 @@ DWA::DWA():private_nh("~")
     private_nh.param("hz",hz,{10});
     private_nh.param("dt",dt,{0.5});
     private_nh.param("predict_time",predict_time,{3});
-    private_nh.param("robot_radius",robot_radius,{1});
+    private_nh.param("robot_radius",robot_radius,{0.1});
     private_nh.param("visible_dist",visible_dist,{5});
     private_nh.param("reso_velocity",reso_velocity,{0.1});
-    private_nh.param("reso_omega",reso_omega,{0.1});
-    private_nh.param("reso_range",reso_range,{0.1});
-    private_nh.param("reso_mass",reso_mass,{0.05});
+    private_nh.param("reso_omega",reso_omega,{0.05});
+    private_nh.param("reso_range",reso_range,{0.05});
+    // private_nh.param("reso_mass",reso_mass,{0.05});
     private_nh.param("SPEED_MAX",SPEED_MAX,{1});
-    private_nh.param("SPEED_MIN",SPEED_MIN,{-0.5});
-    private_nh.param("ANGULAR_SPEED_MAX",ANGULAR_SPEED_MAX,{1.57});
-    private_nh.param("ACCEL_MAX",ACCEL_MAX,{0.5});
-    private_nh.param("ANGULAR_ACCEL_MAX",ANGULAR_SPEED_MAX,{1.57});
+    private_nh.param("SPEED_MIN",SPEED_MIN,{0});
+    private_nh.param("ANGULAR_SPEED_MAX",ANGULAR_SPEED_MAX,{0.5});
+    private_nh.param("ACCEL_MAX",ACCEL_MAX,{100});
+    private_nh.param("ANGULAR_ACCEL_MAX",ANGULAR_ACCEL_MAX,{157});
     private_nh.param("COST_GAIN_TO_GOAL",COST_GAIN_TO_GOAL,{1});
     private_nh.param("COST_GAIN_OBSTACLE",COST_GAIN_OBSTACLE,{1});
     private_nh.param("COST_GAIN_SPEED",COST_GAIN_SPEED,{1});
@@ -30,10 +30,11 @@ DWA::DWA():private_nh("~")
     sub_odom = nh.subscribe("odom",10,&DWA::odom_callback,this);
     sub_local_goal = nh.subscribe("local_goal",10,&DWA::local_goal_callback,this);
 
-    pub_robot_ctrl = nh.advertise<geometry_msgs::Twist>("controller/mcd_vel",10);
+    pub_robot_ctrl = nh.advertise<geometry_msgs::Twist>("controller/cmd_vel",10);
     pub_best_traj = nh.advertise<nav_msgs::Path>("best_traj",10);
     pub_list_traj = nh.advertise<nav_msgs::Path>("list_traj",10);
     pub_list_object = nh.advertise<nav_msgs::Path>("list_object",10);
+    pub_local_goal = nh.advertise<geometry_msgs::PoseStamped>("local_goal",10);
 }
 
 void DWA::scan_callback(const sensor_msgs::LaserScan::ConstPtr &msg)
@@ -43,14 +44,6 @@ void DWA::scan_callback(const sensor_msgs::LaserScan::ConstPtr &msg)
     flag_scan = true;
 }
 
-// void DWA::mcl_pose_callback(const geometry_msgs::PoseStamped::ConstPtr &msg)
-// {
-//     pose = *msg;
-//     current_state.x = pose.pose.pose.position.x;
-//     current_state.y = pose.pose.pose.position.y;
-//     current_state.yaw = tf2::getYaw(pose.pose.pose.orientation);
-//     flag_pose = true;
-// }
 void DWA::amcl_pose_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &msg)
 {
     pose = *msg;
@@ -75,6 +68,8 @@ void DWA::local_goal_callback(const geometry_msgs::PoseStamped::ConstPtr &msg)
     goal.y=local_goal.pose.position.y;
     // goal.x=5;
     // goal.y=2;
+    local_goal.header.frame_id="base_link";
+    pub_local_goal.publish(local_goal);
     flag_local_goal = true;
 }
 
@@ -94,21 +89,24 @@ void DWA::calc_dynamic_window()
     dw.vel_min = std::max(Vs.vel_min, Vd.vel_min);
     dw.omega_max = std::min(Vs.omega_max, Vd.omega_max);
     dw.omega_min = std::max(Vs.omega_min, Vd.omega_min);
+    // printf("window_size:%lf,%lf,%lf,%lf\n",dw.vel_min,dw.vel_max,dw.omega_min,dw.omega_max);
 }
 
 void DWA::scan_obstacle()
 {
     double angle = scan.angle_min;
+    // double scan_range_min = scan.range_min;
+    obstacle.clear();
     for(auto& r : scan.ranges) {
-        if(r<visible_dist) {
-            object.x=r*std::sin(angle);
-            object.y=r*std::cos(angle);
+        if(robot_radius<r&&r<visible_dist) {
+            object.x=r*std::cos(angle);
+            object.y=r*std::sin(angle);
             obstacle.push_back(object);
             // scan_to_grid_map(double r);
         }
         angle += scan.angle_increment;
     }
-    visual_list_object(obstacle);
+    // visual_list_object(obstacle);
 }
 
 void DWA::calc_trajectory()
@@ -126,19 +124,28 @@ void DWA::calc_trajectory()
                 predict_state.x=predict_state.velocity*time*std::cos(predict_state.omega*time);
                 predict_state.y=predict_state.velocity*time*std::sin(predict_state.omega*time);
                 traj.push_back(predict_state);
-
-                visual_list_traj(traj.back());
+                // printf("%f,%f\n",predict_state.x,predict_state.y);
+                // visual_list_traj(traj);
             }
+            visual_list_traj(traj);
+
             double cost_heading = calc_heading(traj.back());
             double cost_dist = calc_dist(traj);
+            // printf("%d\n",traj.size());
             double cost_velocity = calc_velocity(traj.back());
+            // double cost_heading = 0;
+            // double cost_dist = 0;
+            // double cost_velocity = 0;
             double cost_evaluation = COST_GAIN_TO_GOAL*cost_heading + COST_GAIN_OBSTACLE*cost_dist + COST_GAIN_SPEED*cost_velocity;
+            // printf("%f,%f,%f,%f\n",cost_heading,cost_dist,cost_velocity,cost_evaluation);
 
             if(cost_min>cost_evaluation) {
                 cost_min = cost_evaluation;
                 best_state.velocity = predict_state.velocity;
                 best_state.omega = predict_state.omega;
+                // printf("%f,%f,%f,%f\n",cost_heading,cost_dist,cost_velocity,cost_min);
             }
+            // visual_list_traj(traj);
         }
     }
     visual_best_traj();
@@ -147,24 +154,34 @@ void DWA::calc_trajectory()
 double DWA::calc_heading(State& traj_)
 {
     // double heading_yaw = std::atan2((goal.y-traj_.y), (goal.x-traj_.x));
-    double heading_yaw = std::atan2(goal.y-current_state.y,goal.x-current_state.x) - std::atan2(traj_.y-current_state.y,traj_.x-current_state.x);
-    double cost=std::sin(heading_yaw);
+    // goal.x=current_state.x;
+    // goal.y=current_state.y;
+    goal.x=5;
+    goal.y=0;
+    double heading_yaw = std::atan2(goal.y,goal.x) - std::atan2(traj_.y,traj_.x);
+    // printf("goal:%f,%f",goal.x,goal.y);
+    // printf("traj:%f,%f\n",traj_.x,traj_.y);
+    double cost=heading_yaw/(M_PI/2);
+    // cost=0;
     if(cost<0) cost*=-1;
     return cost;
 }
 
 double DWA::calc_dist(std::vector<State>& traj_)
 {
-    double dist_min=1e3;
+    double dist_min=1e5;
     for(auto& traj__ : traj_) {
         for(auto& obs : obstacle) {
             double dist=std::sqrt(pow(traj__.x-obs.x,2) + pow(traj__.y-obs.y,2));
             if(dist_min>dist) dist_min=dist;
+            if(dist_min<robot_radius) return 10;
+            // printf("%f\n",dist_min);
         }
     }
     // double dist=std::sqrt(pow(traj_.x-obstacle.x,2) + pow(traj_.y-obstacle.y,2));
     // if(dist_min>dist) dist_min=dist;
-    return robot_radius/dist_min;
+    // if(robot_radius<dist_min) dist_min=robot_radius;
+    return robot_radius/(dist_min+1e-10);
 }
 
 double DWA::calc_velocity(State& traj_)
@@ -186,6 +203,7 @@ void DWA::visual_list_object(std::vector<State>& obj)
 
 void DWA::visual_best_traj()
 {
+    best_traj.poses.clear();
     for(double time=0;time<=predict_time;time+=dt) {
         geometry_msgs::PoseStamped best_traj_point;
         best_traj_point.pose.position.x=best_state.velocity*time*std::cos(best_state.omega*time);
@@ -198,14 +216,17 @@ void DWA::visual_best_traj()
     // pub_best_traj.publish(best_traj_path);
 }
 
-void DWA::visual_list_traj(State& traj_)
+void DWA::visual_list_traj(std::vector<State>& traj_)
 {
-    geometry_msgs::PoseStamped list_traj_point;
-    list_traj_point.pose.position.x=traj_.x;
-    list_traj_point.pose.position.y=traj_.y;
-    list_traj.poses.push_back(list_traj_point);
-    list_traj.header.frame_id = "base_link";
-    pub_list_traj.publish(list_traj);
+    list_traj.poses.clear();
+    for(auto& traj__ : traj_){
+        geometry_msgs::PoseStamped list_traj_point;
+        list_traj_point.pose.position.x=traj__.x;
+        list_traj_point.pose.position.y=traj__.y;
+        list_traj.poses.push_back(list_traj_point);
+        list_traj.header.frame_id = "base_link";
+        pub_list_traj.publish(list_traj);
+    }
 }
 
 void DWA::init()
@@ -218,9 +239,10 @@ void DWA::robot_control()
 {
     calc_dynamic_window();
     calc_trajectory();
+    // cmd_vel.clear();
     cmd_vel.linear.x=best_state.velocity;
     cmd_vel.angular.z=best_state.omega;
-    printf("%f, %f\n",cmd_vel.linear.x,cmd_vel.angular.z);
+    // printf("%f, %f\n",cmd_vel.linear.x,cmd_vel.angular.z);
     pub_robot_ctrl.publish(cmd_vel);
 }
 
@@ -230,13 +252,11 @@ void DWA::process()
     while(ros::ok())
     {
         if(flag_odom&&flag_scan&&flag_pose&&flag_local_goal) {
-            // printf("1\n");
             robot_control();
-            // printf("2\n");
             init();
-            ros::spinOnce();
-            loop_rate.sleep();
         }
+        ros::spinOnce();
+        loop_rate.sleep();
     }
 }
 

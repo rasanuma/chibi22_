@@ -92,7 +92,6 @@ class DWA
         nav_msgs::Path list_traj;
         geometry_msgs::Twist cmd_vel;
 
-
         void scan_callback(const sensor_msgs::LaserScan::ConstPtr &);
         // void mcl_pose_callback(const geometry_msgs::PoseStamped::ConstPtr &);
         void amcl_pose_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &);
@@ -109,7 +108,7 @@ class DWA
         double calc_velocity(State&);
         void visual_list_object(std::vector<State>&);
         void visual_best_traj();
-        void visual_list_traj(State&);
+        void visual_list_traj(std::vector<State>&);
         void robot_control();
         void init();
 
@@ -126,7 +125,7 @@ class DWA
         ros::Publisher pub_best_traj;
         ros::Publisher pub_list_traj;
         ros::Publisher pub_list_object;
-
+        ros::Publisher pub_local_goal;
 };
 
 #endif
