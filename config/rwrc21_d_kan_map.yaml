@@ -1,0 +1,74 @@
+# sample node_edge map
+EDGE:
+    - node_id: [0, 1]
+    - node_id: [1, 2]
+    - node_id: [2, 3]
+    - node_id: [3, 4]
+    - node_id: [4, 5]
+    - node_id: [5, 6]
+    - node_id: [6, 7]
+    - node_id: [7, 0]
+    - node_id: [0, 8]
+    - node_id: [2, 8]
+    - node_id: [4, 8]
+    - node_id: [6, 8]
+MAP_FRAME: '/map'
+NODE:
+    - id: 0 # 研究室前
+     #  type: "intersection"
+      type: ""
+      point:
+           x: 3.116
+           y: -0.183
+           theta:
+      label: ""
+      image:
+    - id: 1
+      type: "respawn"
+      point:
+           x: -13.123
+           y: -1.337
+      label: "traffic_detector_launch"
+    - id: 2
+      type: "intersection"
+      point:
+           x: -16.6528
+           y: -6.1011
+      label: ""
+    - id: 3
+      type: ""
+      point:
+           x: -12.427
+           y: -14.065
+      label: "traffic_detector_launch"
+    - id: 4
+      type: ""
+      point:
+           x: 2.958
+           y: -13.768
+      label: "park"
+    - id: 5
+      type: "respawn"
+      point:
+           x: 19.421
+           y: -12.726
+      label: "traffic_detector_launch"
+    - id: 6 # 広い出口
+      type: "intersection"
+      point:
+           x: 16.5382
+           y: -7.91079
+      label: "park"
+    - id: 7
+      type: "intersection"
+     #  type: "respawn"
+      point:
+           x: 19.625
+           y: 0.136
+      label: "park"
+    - id: 8
+      type: "intersection"
+      point:
+           x: -1.5428
+           y: -7.0
+      label: ""
