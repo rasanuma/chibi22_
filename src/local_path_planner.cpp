@@ -144,10 +144,6 @@ void DWA::calc_trajectory()
 
 double DWA::calc_heading(State& traj_)
 {
-    // goal.x=5;
-    // goal.y=0;
-    // double x=goal.x-current_state.x;
-    // double y=goal.y-current_state.y;
     double x=(goal.x-current_state.x)*std::cos(-current_state.yaw)-(goal.y-current_state.y)*std::sin(-current_state.yaw);
     double y=(goal.x-current_state.x)*std::sin(-current_state.yaw)+(goal.y-current_state.y)*std::cos(-current_state.yaw);
     // goal.x=(goal.x*std::cos(current_state.yaw)-current_state.x)-(goal.y*std::sin(current_state.yaw)-current_state.y);

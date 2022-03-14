@@ -42,8 +42,8 @@ class AMCL
         double MAX_RANGE;
         double ALPHA_SLOW;
         double ALPHA_FAST;
+        double ANGLE_STEP;
         double weight;
-        double angle_step;
         bool flag_scan;
         bool flag_odom;
         bool flag_map;

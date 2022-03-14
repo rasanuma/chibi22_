@@ -16,9 +16,9 @@ AMCL::AMCL():private_nh("~")
     private_nh.param("MOVE_DIST",MOVE_DIST,{1});
     private_nh.param("MOVE_YAW",MOVE_YAW,{0.5});
     private_nh.param("MAX_RANGE",MAX_RANGE,{5});
+    private_nh.param("ANGLE_STEP",ANGLE_STEP,{1});
     private_nh.param("ALPHA_SLOW",ALPHA_SLOW,{1});
     private_nh.param("ALPHA_SLOW",ALPHA_FAST,{5});
-    private_nh.param("hz",hz,{10});
 
     sub_scan = nh.subscribe("scan",10,&DWA::scan_callback,this);
     sub_odom = nh.subscribe("odom",10,&DWA::odom_callback,this);
@@ -62,12 +62,13 @@ double AMCL::calc_weight(geometry_msgs::PoseStamped &pose)
     double x = pose.pose.position.x;
     double y = pose.pose.position.y;
     double yaw = tf::getYaw(pose.pose.orientation);
-    for(int i=0; i<scan.ranges.size(); i+=scan.ranges.size()/angle_step) {
-
+    for(int i=0; i<scan.ranges.size(); i+=scan.ranges.size()/ANGLE_STEP) {
+        if(scan.ranges[i]>scan.range_min) {
+            double dist_to_wall = dist_p_to_obs();
     }
 }
 
-double AMCL::from_dist_p_to_obs(double x, double y, double yaw, double range)
+double AMCL::dist_p_to_obs(double x, double y, double yaw, double range)
 {
     double search_step = map.info.resolution;
     // double search_max = std::min(range*, MAX_RANGE);
