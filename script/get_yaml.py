@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
 import numpy as np
 import math
@@ -17,7 +17,6 @@ class GetYaml:
         self.checkpoint_list = Int32MultiArray()
         self.checkpoint_list_pub =rospy.Publisher('checkpoint', Int32MultiArray, queue_size=1, latch=True)
 
-        # rospy.set_param('self.HZ', 10)
         # rospy.set_param('self.MAP_PATH', '$(find amsl_navigation_managers)/amsl_navigation_managers/sample/map/R_rwrc21_d_kan_map.yaml')
         # rospy.set_param('self.CHECKPOINT_PATH', '$(find amsl_navigation_managers)/amsl_navigation_managers/sample/checkpoint/rwrc21_d_kan_checkpoint.yaml')
 
@@ -42,13 +41,11 @@ class GetYaml:
     def load_map_from_yaml(self):
         with open(self.MAP_PATH) as file:
             map_data = yaml.safe_load(file)
-            # print('load_map')
         return map_data
 
     def load_cp_from_yaml(self):
         with open(self.CHECKPOINT_PATH) as file:
             cp_data = yaml.safe_load(file)
-            # print('load_cp')
         return cp_data
 
     def make_map(self):

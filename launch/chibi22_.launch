@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <launch>
-    <!-- <node pkg="chibi22_" type="local_path_planner" name="local_path_planner"/> -->
+    <include file="$(find chibi22_)/launch/local_path_planner.launch"/>
 
-    <node pkg="chibi22_" type="local_goal_creator" name="local_goal_creator"/>
+    <include file="$(find chibi22_)/launch/local_goal_creator.launch"/>
 
     <include file="$(find chibi22_)/launch/get_yaml.launch"/>
+
+    <include file="$(find mcl_3dl)/launch/test.launch"/>
 </launch>

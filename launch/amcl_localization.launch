@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="chibi22_" type="amcl_localization" name="amcl_localization" output="screen">
+        <param name="hz" value="10" />
+        <param name="N" value="500" />
+        <param name="init_x" value="3.1" />
+        <param name="init_y" value="-0.2" />
+        <param name="init_yaw" value="0" />
+        <param name="init_x_sigma" value="0.5" />
+        <param name="init_y_sigma" value="0.5" />
+        <param name="init_yaw_sigma" value="0.5" />
+        <param name="range_sigma" value="0.5" />
+        <param name="move_dist_sigma" value="1" />
+        <param name="move_yaw_sigma" value="0.5" />
+        <param name="ANGLE_STEP" value="10" />
+        <param name="ALPHA_SLOW" value="1" />
+        <param name="ALPHA_FAST" value="5" />
+    </node>
+</launch>

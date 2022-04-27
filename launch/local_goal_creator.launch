@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="chibi22_" type="local_goal_creator" name="local_goal_creator" output="screen">
+        <param name="hz" value="10" />
+        <param name="goal_radius" value="1.5" />
+        <param name="reso_local_goal" value="10" />
+        <param name="flag_pose" value="false" />
+        <param name="flag_node" value="false" />
+    </node>
+</launch>

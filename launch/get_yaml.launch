@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
 
-    <arg name="map_path" default="$(find chibi22_)/config/rwrc21_d_kan_map.yaml"/>
-    <arg name="checkpoint_path" default="$(find chibi22_)/config/rwrc21_d_kan_checkpoint.yaml"/>
+    <arg name="map_path" default="$(find chibi22_)/param/rwrc21_d_kan_map.yaml"/>
+    <arg name="checkpoint_path" default="$(find chibi22_)/param/rwrc21_d_kan_checkpoint.yaml"/>
     <arg name="hz" default="10"/>
 
     <node pkg="chibi22_" type="get_yaml.py" name="get_yaml">

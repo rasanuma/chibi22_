@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="chibi22_" type="local_path_planner" name="local_path_planner" output="screen">
+        <param name="hz" value="10" />
+        <param name="dt" value="0.1" />
+        <param name="predict_time" value="3" />
+        <param name="robot_radius" value="0.4" />
+        <param name="safe_radius" value="0.2" />
+        <param name="robot_wide" value="0.35" />
+        <param name="robot_depth" value="0.8" />
+        <param name="visible_dist" value="5" />
+        <param name="reso_velocity" value="0.1" />
+        <param name="reso_omega" value="0.05" />
+        <param name="reso_range" value="0.05" />
+        <param name="SPEED_MAX" value="0.7" />
+        <param name="SPEED_MIN" value="0" />
+        <param name="ANGULAR_SPEED_MAX" value="0.5" />
+        <param name="ACCEL_MAX" value="1000" />
+        <param name="ANGULAR_ACCEL_MAX" value="1000" />
+        <param name="COST_GAIN_TO_GOAL" value="1" />
+        <param name="COST_CAIN_OBSTACLE" value="1" />
+        <param name="COST_CAIN_SPEED" value="5" />
+        <param name="flag_odom" value="false" />
+        <param name="flag_scan" value="false" />
+        <param name="flag_pose" value="false" />
+        <param name="flag_local_goal" value="false" />
+    </node>
+</launch>

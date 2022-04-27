@@ -31,14 +31,19 @@ class LocalGoal
     private:
         int hz;
         double goal_radius;
+        double reso_local_goal;
         bool flag_pose;
         bool flag_node;
+        int local_id;
 
         Point goal_point;
+        Point goal_point_old;
+        Point local_goal_point;
         Point current_point;
         Node n;
 
         std::vector<Node> Nodes;
+        std::vector<Point> local_goal_list;
         std::vector<int> list_cp;
         geometry_msgs::PoseWithCovarianceStamped pose;
         amsl_navigation_msgs::NodeEdgeMap node;

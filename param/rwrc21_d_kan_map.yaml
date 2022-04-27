@@ -72,3 +72,53 @@ NODE:
            x: -1.5428
            y: -7.0
       label: ""
+    # - id: 11
+    #   type: "intersection"
+    #   point:
+    #        x: -11.536
+    #        y: -0.624
+    #   label: ""
+    # - id: 111
+    #   type: "respawn"
+    #   point:
+    #        x: -13.536
+    #        y: -2.624
+    #   label: ""
+    # - id: 33
+    #   type: ""
+    #   point:
+    #        x: -13.023
+    #        y: -12.512
+    #   label: ""
+    # - id: 333
+    #   type: ""
+    #   point:
+    #        x: -11.023
+    #        y: -14.512
+    #   label: ""
+    # - id: 55
+    #   type: "respawn"
+    #   point:
+    #        x: 18.191
+    #        y: -13.466
+    #   label: ""
+    # - id: 555
+    #   type: "respawn"
+    #   point:
+    #        x: 20.191
+    #        y: -11.466
+    #   label: ""
+    # - id: 77
+    #   type: "intersection"
+    #  #  type: "respawn"
+    #   point:
+    #        x: 19.625
+    #        y: -2.378
+    #   label: ""
+    # - id: 777
+    #   type: "intersection"
+    #  #  type: "respawn"
+    #   point:
+    #        x: 17.625
+    #        y: 0.378
+    #   label: ""

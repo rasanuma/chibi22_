@@ -140,6 +140,7 @@ include
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(local_path_planner src/local_path_planner.cpp)
 add_executable(local_goal_creator src/local_goal_creator.cpp)
+add_executable(amcl_localization src/amcl_localization.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -151,6 +152,7 @@ add_executable(local_goal_creator src/local_goal_creator.cpp)
 ## same as for the library above
 add_dependencies(local_path_planner ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(local_goal_creator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(amcl_localization ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -158,6 +160,7 @@ add_dependencies(local_goal_creator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin
 # )
 target_link_libraries(local_path_planner ${catkin_LIBRARIES})
 target_link_libraries(local_goal_creator ${catkin_LIBRARIES})
+target_link_libraries(amcl_localization ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############

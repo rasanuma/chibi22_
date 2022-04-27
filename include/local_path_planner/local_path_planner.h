@@ -3,14 +3,12 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
-// #include <velodyne_msgs/VelodyneScan.h>
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/tf.h>
-// #include <tf2_msgs/TFMessage.h>
 #include <vector>
 #include <nav_msgs/Path.h>
 
@@ -51,6 +49,9 @@ class DWA
         double dt;
         double predict_time;
         double robot_radius;
+        double safe_radius;
+        double robot_wide;
+        double robot_depth;
         double visible_dist;
         double reso_velocity;
         double reso_omega;
@@ -67,6 +68,8 @@ class DWA
         double COST_GAIN_OBSTACLE;
         double COST_GAIN_SPEED;
 
+        double exclusion;
+
         bool flag_odom;
         bool flag_scan;
         bool flag_pose;
@@ -77,34 +80,35 @@ class DWA
         State predict_state;
         State best_state;
         State object;
+        State wheel;
+        // State predict_wheel;
 
         std::vector<State> obstacle;
         std::vector<State> traj;
+        std::vector<State> list_wheel;
+        std::vector<State> wheel_traj;
         sensor_msgs::LaserScan scan;
-        // sensor_msgs::PointCloud2 scan;
-        // geometry_msgs::PoseStamped mcl_pose;
         geometry_msgs::PoseWithCovarianceStamped pose;
         nav_msgs::Odometry odom;
         geometry_msgs::PoseStamped local_goal;
-        // geometry_msgs::PoseStamped best_traj;
         nav_msgs::Path list_object;
         nav_msgs::Path best_traj;
         nav_msgs::Path list_traj;
         geometry_msgs::Twist cmd_vel;
 
         void scan_callback(const sensor_msgs::LaserScan::ConstPtr &);
-        // void mcl_pose_callback(const geometry_msgs::PoseStamped::ConstPtr &);
         void amcl_pose_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &);
         void odom_callback(const nav_msgs::Odometry::ConstPtr &);
         void local_goal_callback(const geometry_msgs::PoseStamped::ConstPtr &);
+        void wheel_callback(const geometry_msgs::PoseStamped::ConstPtr &);
         void calc_dynamic_window();
+        void wheel_pose();
         void scan_obstacle();
         void scan_to_grid_map();
         // void 3D_to_2D_object();
         void calc_trajectory();
         double calc_heading(State&);
-        // double calc_dist(std::vector<std::vector<double>>&, State&);
-        double calc_dist(std::vector<State>&);
+        double calc_dist(std::vector<State>&, std::vector<State>&);
         double calc_velocity(State&);
         void visual_list_object(std::vector<State>&);
         void visual_best_traj();
@@ -116,7 +120,6 @@ class DWA
         ros::NodeHandle private_nh;
 
         ros::Subscriber sub_scan;
-        // ros::Subscriber sub_mcl_pose;
         ros::Subscriber sub_amcl_pose;
         ros::Subscriber sub_odom;
         ros::Subscriber sub_local_goal;
