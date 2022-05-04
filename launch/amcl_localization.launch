@@ -1,17 +1,21 @@
 <?xml version="1.0"?>
 <launch>
+    <arg name="map_file" default="$(find chibi22_)/map/d1_gmap.yaml"/>
+    <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)" output="screen"/>
     <node pkg="chibi22_" type="amcl_localization" name="amcl_localization" output="screen">
         <param name="hz" value="10" />
         <param name="N" value="500" />
-        <param name="init_x" value="3.1" />
-        <param name="init_y" value="-0.2" />
-        <param name="init_yaw" value="0" />
+        <param name="init_x" value="2.6" />
+        <param name="init_y" value="1.3" />
+        <param name="init_yaw" value="3.8" />
         <param name="init_x_sigma" value="0.5" />
         <param name="init_y_sigma" value="0.5" />
         <param name="init_yaw_sigma" value="0.5" />
-        <param name="range_sigma" value="0.5" />
-        <param name="move_dist_sigma" value="1" />
-        <param name="move_yaw_sigma" value="0.5" />
+        <param name="range_sigma" value="0.3" />
+        <param name="dxy_sigma" value="0.1" />
+        <param name="dyaw_sigma" value="0.1" />
+        <param name="max_range" value="10" />
+        <param name="range_reso" value="0.2" />
         <param name="ANGLE_STEP" value="10" />
         <param name="ALPHA_SLOW" value="1" />
         <param name="ALPHA_FAST" value="5" />
